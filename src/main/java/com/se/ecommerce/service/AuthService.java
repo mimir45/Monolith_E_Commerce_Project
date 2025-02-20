@@ -49,6 +49,9 @@ public class AuthService {
                     .username(userCreateRequest.getUserName())
                     .role(Role.USER)
                     .build();
+            return login( new UserLoginRequest(userCreateRequest.getEmail(),userCreateRequest.getPassword()));
         }
+        //Todo Special Exception
+        throw new RuntimeException("User already exists");
     }
 }
