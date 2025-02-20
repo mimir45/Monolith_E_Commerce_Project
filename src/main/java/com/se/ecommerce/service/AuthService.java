@@ -1,8 +1,8 @@
 package com.se.ecommerce.service;
 
-import com.se.ecommerce.dto.UserCreateRequest;
-import com.se.ecommerce.dto.UserLoginRequest;
-import com.se.ecommerce.dto.UserLoginResponse;
+import com.se.ecommerce.dto.user.UserCreateRequest;
+import com.se.ecommerce.dto.user.UserLoginRequest;
+import com.se.ecommerce.dto.user.UserLoginResponse;
 import com.se.ecommerce.model.Role;
 import com.se.ecommerce.repository.UserRepository;
 import com.se.ecommerce.security.JwtUtil;
@@ -13,7 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

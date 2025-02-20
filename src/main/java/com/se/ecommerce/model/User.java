@@ -30,14 +30,18 @@ public class User {
     private String email;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Role role = Role.USER;
 
     @OneToMany(mappedBy = "user" )
+    @Builder.Default
     private List<Address> addresses = new ArrayList<>();
+    @Builder.Default
     @OneToMany(mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    @Builder.Default
     private List<Review> reviews = new ArrayList<>();
     @OneToOne(fetch = FetchType.LAZY)
     private Cart cart;

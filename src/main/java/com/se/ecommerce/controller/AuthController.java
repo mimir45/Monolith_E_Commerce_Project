@@ -1,8 +1,8 @@
 package com.se.ecommerce.controller;
 
-import com.se.ecommerce.dto.UserCreateRequest;
-import com.se.ecommerce.dto.UserLoginRequest;
-import com.se.ecommerce.dto.UserLoginResponse;
+import com.se.ecommerce.dto.user.UserCreateRequest;
+import com.se.ecommerce.dto.user.UserLoginRequest;
+import com.se.ecommerce.dto.user.UserLoginResponse;
 import com.se.ecommerce.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
