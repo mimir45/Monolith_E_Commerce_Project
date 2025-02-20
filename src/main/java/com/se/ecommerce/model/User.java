@@ -33,12 +33,12 @@ public class User {
     private Role role = Role.USER;
 
     @OneToMany(mappedBy = "user" )
-    private List<Address> addresses;
+    private List<Address> addresses = new ArrayList<>();
     @OneToMany(mappedBy = "user")
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();
     @OneToOne(fetch = FetchType.LAZY)
     private Cart cart;
 
