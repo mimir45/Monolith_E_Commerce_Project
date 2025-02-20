@@ -44,4 +44,47 @@ public class ProductService {
         //todo exceoption
         throw new RuntimeException("Product with name " + request.getName() + " already exists");
     }
+
+    public ResponseEntity<ProductDto> getById(Long id) {
+        log.info("Get product by id: {}", id);
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if (optionalProduct.isPresent()) {
+            return ResponseEntity.ok(new ProductDto(optionalProduct.get()));
+        }
+        //todo custom exception
+        throw new RuntimeException("Product with id " + id + " not found");
+    }
+
+    public ResponseEntity<ProductDto> updateProduct(Long id, ProductCreateRequest request) {
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if (optionalProduct.isPresent()) {
+            Product product = new Product(request);
+            product.setId(id);
+            productRepository.save(product);
+            return ResponseEntity.ok(new ProductDto(product));
+        }
+        //todo custom exception
+        throw new RuntimeException("Product with id " + id + " not found");
+    }
+
+    public ResponseEntity<ProductDto> addStock(Long id, Integer stock) {
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            product.setStock(product.getStock()+stock);
+            productRepository.save(product);
+            return ResponseEntity.ok(new ProductDto(product));
+        }
+        throw new RuntimeException("Product with id " + id + " not found");
+    }
+
+    public ResponseEntity<Void> deleteProduct(Long id) {
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if (optionalProduct.isPresent()) {
+            productRepository.delete(optionalProduct.get());
+            return ResponseEntity.noContent().build();
+        }
+
+        throw new RuntimeException("Product with id " + id + " not found");
+    }
 }
