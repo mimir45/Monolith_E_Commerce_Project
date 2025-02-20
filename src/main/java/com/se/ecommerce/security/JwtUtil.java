@@ -1,9 +1,11 @@
 package com.se.ecommerce.security;
 
+import com.se.ecommerce.config.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.User;
 
 import javax.crypto.SecretKey;
@@ -12,7 +14,8 @@ import java.time.Instant;
 import java.util.Date;
 
 public class JwtUtil {
-    static final String SECRET = "${jwt.secret}";
+    private static final String SECRET = JwtConfig.getSecret(); // Fetch from static method
+
     public static String generateToken(User user) {
         return Jwts.builder()
                 .subject(user.getUsername())

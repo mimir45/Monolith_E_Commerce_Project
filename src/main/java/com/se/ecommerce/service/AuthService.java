@@ -36,7 +36,9 @@ public class AuthService {
         UsernamePasswordAuthenticationToken token =new UsernamePasswordAuthenticationToken(userLoginRequest.getEmail(), userLoginRequest.getPassword());
         Authentication authentication = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        log.info("Authentication successful");
         String jwtToken = JwtUtil.generateToken((User) authentication.getPrincipal());
+        log.info("JWT token received");
         return ResponseEntity.ok(new UserLoginResponse(jwtToken));
     }
     public ResponseEntity<UserLoginResponse> register(UserCreateRequest userCreateRequest){
@@ -49,6 +51,8 @@ public class AuthService {
                     .username(userCreateRequest.getUserName())
                     .role(Role.USER)
                     .build();
+            log.info("New user created");
+            userRepository.save(newUser);
             return login( new UserLoginRequest(userCreateRequest.getEmail(),userCreateRequest.getPassword()));
         }
         //Todo Special Exception
