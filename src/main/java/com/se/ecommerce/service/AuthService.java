@@ -3,9 +3,11 @@ package com.se.ecommerce.service;
 import com.se.ecommerce.dto.user.UserCreateRequest;
 import com.se.ecommerce.dto.user.UserLoginRequest;
 import com.se.ecommerce.dto.user.UserLoginResponse;
+import com.se.ecommerce.model.Cart;
 import com.se.ecommerce.model.Role;
 import com.se.ecommerce.repository.UserRepository;
 import com.se.ecommerce.security.JwtUtil;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,11 +26,13 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final CartService cartService;
 
-    public AuthService(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public AuthService(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, UserRepository userRepository, CartService cartService) {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.cartService = cartService;
     }
     public ResponseEntity<UserLoginResponse> login(UserLoginRequest userLoginRequest){
         log.info("Login request received");
@@ -40,6 +44,7 @@ public class AuthService {
         log.info("JWT token received");
         return ResponseEntity.ok(new UserLoginResponse(jwtToken));
     }
+    @Transactional
     public ResponseEntity<UserLoginResponse> register(UserCreateRequest userCreateRequest){
         log.info("Register request received");
         Optional<com.se.ecommerce.model.User> user = userRepository.findByEmail(userCreateRequest.getEmail());
@@ -51,6 +56,7 @@ public class AuthService {
                     .role(Role.USER)
                     .build();
             log.info("New user created");
+            cartService.createCart();
             userRepository.save(newUser);
             return login( new UserLoginRequest(userCreateRequest.getEmail(),userCreateRequest.getPassword()));
         }

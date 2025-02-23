@@ -2,6 +2,7 @@ package com.se.ecommerce.service;
 
 import com.se.ecommerce.dto.product.ProductCreateRequest;
 import com.se.ecommerce.dto.product.ProductDto;
+import com.se.ecommerce.model.Category;
 import com.se.ecommerce.model.Product;
 import com.se.ecommerce.repository.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -17,9 +18,11 @@ import java.util.Optional;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
-    public ProductService(ProductRepository productRepository ) {
+    private final CategoryService categoryService;
+    public ProductService(ProductRepository productRepository, CategoryService categoryService) {
         this.productRepository = productRepository;
 
+        this.categoryService = categoryService;
     }
 
     public ResponseEntity<List<ProductDto>> getProducts(){
@@ -36,6 +39,10 @@ public class ProductService {
         log.info("Product found: {}", optionalProduct);
         if (optionalProduct.isEmpty()) {
             Product newProduct = new Product(request);
+            boolean  optionalCategory = categoryService.categoryExists(request.getCategory());
+           if (!optionalCategory) {
+               categoryService.createCategory(request.getCategory());
+           }
             productRepository.save(newProduct);
             log.info("Product created: {}", newProduct);
             return ResponseEntity.ok(new ProductDto(newProduct));
