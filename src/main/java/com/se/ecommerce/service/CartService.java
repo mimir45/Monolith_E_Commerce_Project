@@ -1,7 +1,9 @@
 package com.se.ecommerce.service;
 
 import com.se.ecommerce.dto.cart.CartDto;
+import com.se.ecommerce.dto.cart.CartItemDto;
 import com.se.ecommerce.dto.cart.CartItemRequest;
+import com.se.ecommerce.dto.cart.UpdateCartItemRequest;
 import com.se.ecommerce.model.Cart;
 import com.se.ecommerce.model.CartItem;
 import com.se.ecommerce.model.Product;
@@ -9,7 +11,7 @@ import com.se.ecommerce.model.User;
 import com.se.ecommerce.repository.CartItemRepository;
 import com.se.ecommerce.repository.CartRepository;
 import com.se.ecommerce.repository.ProductRepository;
-import com.se.ecommerce.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -72,6 +74,7 @@ public class CartService {
                 .product(product.get())
                 .quantity(request.getQuantity())
                 .totalPrice(totalPrice)
+                .cart(cart)
                 .build();
         cartItemRepository.save(cartItem);
         cart.getItems().add(cartItem);
@@ -79,5 +82,31 @@ public class CartService {
         CartDto cartDto = new CartDto(cart);
         return ResponseEntity.ok(cartDto);
     }
- }
+
+    public ResponseEntity<CartDto> updateItemQuantity(Long id, UpdateCartItemRequest request) {
+        log.info("Updating cart with id {}", id);
+        Optional<Cart> cartOptional = cartRepository.findById(id);
+        if (cartOptional.isPresent()) {
+            Cart cart = cartOptional.get();
+            Optional<CartItem> cartItemOptional = cartItemRepository.findByCartIdAndProductId(cart.getId(), request.getProductId());
+            if (cartItemOptional.isPresent()) {
+                CartItem cartItem = cartItemOptional.get();
+                cartItem.setQuantity(Math.toIntExact(request.getQuantity()));
+                cartItemRepository.save(cartItem);
+                return ResponseEntity.ok(new CartDto(cart));
+            }
+            throw new RuntimeException("CartItem not found");
+        }
+
+        throw new RuntimeException("Cart not found");
+    }
+
+    public ResponseEntity<Void> deleteCartItem(Long id) {
+        log.info("Deleting cart with id {}", id);
+        Optional<CartItem> cartItemOptional = cartItemRepository.findById(id);
+        cartItemOptional.get().getCart().getItems().remove(cartItemOptional.get());
+        cartItemRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+}
 

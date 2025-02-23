@@ -24,5 +24,9 @@ public class CartItem {
     private Integer quantity;
     private Double totalPrice;
 
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
+
 
 }
