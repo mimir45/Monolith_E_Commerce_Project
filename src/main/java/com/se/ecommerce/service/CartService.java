@@ -6,6 +6,7 @@ import com.se.ecommerce.model.Cart;
 import com.se.ecommerce.model.CartItem;
 import com.se.ecommerce.model.Product;
 import com.se.ecommerce.model.User;
+import com.se.ecommerce.repository.CartItemRepository;
 import com.se.ecommerce.repository.CartRepository;
 import com.se.ecommerce.repository.ProductRepository;
 import com.se.ecommerce.repository.UserRepository;
@@ -22,12 +23,14 @@ public class CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final UserService userService;
+    private final CartItemRepository cartItemRepository;
 
-    public CartService(CartRepository cartRepository, ProductRepository productRepository, UserService userService) {
+    public CartService(CartRepository cartRepository, ProductRepository productRepository, UserService userService, CartItemRepository cartItemRepository) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
 
         this.userService = userService;
+        this.cartItemRepository = cartItemRepository;
     }
 
     public void createCart() {
@@ -58,17 +61,19 @@ public class CartService {
                     return cartRepository.save(newCart);
                 });
 
-        Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        Optional<Product> product = productRepository.findById(request.getProductId());
+        if (product.isEmpty()) {
+            throw new RuntimeException("Product not found");
+        }
 
-        Double totalPrice = product.getPrice() * request.getQuantity();
+        Double totalPrice = product.get().getPrice() * request.getQuantity();
 
         CartItem cartItem = CartItem.builder()
-                .product(product)
+                .product(product.get())
                 .quantity(request.getQuantity())
                 .totalPrice(totalPrice)
                 .build();
-
+        cartItemRepository.save(cartItem);
         cart.getItems().add(cartItem);
         cartRepository.save(cart);
         CartDto cartDto = new CartDto(cart);

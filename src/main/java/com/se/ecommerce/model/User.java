@@ -43,7 +43,7 @@ public class User {
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
     private Cart cart;
 
     @CreationTimestamp
