@@ -1,4 +1,4 @@
-package com.se.ecommerce.security;
+package com.se.ecommerce.service;
 
 import com.se.ecommerce.model.User;
 import com.se.ecommerce.repository.UserRepository;
